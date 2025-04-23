@@ -477,7 +477,7 @@ func writeFloat(w enhancedWriter, f float64) (int, error) {
 		return w.WriteString("-Inf")
 	default:
 		bp := numBufPool.Get().(*[]byte)
-		*bp = strconv.AppendFloat((*bp)[:0], f, 'g', -1, 64)
+		*bp = strconv.AppendFloat((*bp)[:0], f, 'f', -1, 64)
 		written, err := w.Write(*bp)
 		numBufPool.Put(bp)
 		return written, err
