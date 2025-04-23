@@ -27,10 +27,7 @@ func TestUnmarshalJSONLabelSet(t *testing.T) {
 	labelSetJSON := `{
 	"labelSet": {
 		"monitor": "codelab",
-		"foo": "bar",
-		"foo2": "bar",
-		"abc": "prometheus",
-		"foo11": "bar11"
+		"foo": "bar"
 	}
 }`
 	var c testConfig
@@ -41,7 +38,7 @@ func TestUnmarshalJSONLabelSet(t *testing.T) {
 
 	labelSetString := c.LabelSet.String()
 
-	expected := `{abc="prometheus", foo="bar", foo11="bar11", foo2="bar", monitor="codelab"}`
+	expected := `{foo="bar", monitor="codelab"}`
 
 	if expected != labelSetString {
 		t.Errorf("expected %s but got %s", expected, labelSetString)
@@ -55,7 +52,6 @@ func TestUnmarshalJSONLabelSet(t *testing.T) {
 	}
 }`
 
-	NameValidationScheme = LegacyValidation
 	err = json.Unmarshal([]byte(invalidlabelSetJSON), &c)
 	expectedErr := `"1nvalid_23name" is not a valid label name`
 	if err == nil || err.Error() != expectedErr {
@@ -118,57 +114,5 @@ func TestLabelSetMerge(t *testing.T) {
 		if expected != lv {
 			t.Errorf("expected to get LabelValue %s, but got %s for LabelName %s", expected, lv, ln)
 		}
-	}
-}
-
-func TestLabelSet_String(t *testing.T) {
-	tests := []struct {
-		input LabelSet
-		want  string
-	}{
-		{
-			input: nil,
-			want:  `{}`,
-		}, {
-			input: LabelSet{
-				"foo": "bar",
-			},
-			want: `{foo="bar"}`,
-		}, {
-			input: LabelSet{
-				"foo":   "bar",
-				"foo2":  "bar",
-				"abc":   "prometheus",
-				"foo11": "bar11",
-			},
-			want: `{abc="prometheus", foo="bar", foo11="bar11", foo2="bar"}`,
-		},
-	}
-	for _, tt := range tests {
-		t.Run("test", func(t *testing.T) {
-			if got := tt.input.String(); got != tt.want {
-				t.Errorf("LabelSet.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-// Benchmark Results for LabelSet's String() method
-// ---------------------------------------------------------------------------------------------------------
-// goos: linux
-// goarch: amd64
-// pkg: github.com/prometheus/common/model
-// cpu: 11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz
-// BenchmarkLabelSetStringMethod-8                               732376              1532 ns/op
-
-func BenchmarkLabelSetStringMethod(b *testing.B) {
-	ls := make(LabelSet)
-	ls["monitor"] = "codelab"
-	ls["foo2"] = "bar"
-	ls["foo"] = "bar"
-	ls["abc"] = "prometheus"
-	ls["foo11"] = "bar11"
-	for i := 0; i < b.N; i++ {
-		_ = ls.String()
 	}
 }

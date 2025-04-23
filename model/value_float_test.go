@@ -18,8 +18,6 @@ import (
 	"math"
 	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -302,6 +300,8 @@ func TestMatrixJSON(t *testing.T) {
 func BenchmarkJSONMarshallingSamplePairMatrix(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, err := json.Marshal(samplePairMatrixValue)
-		require.NoErrorf(b, err, "error marshalling")
+		if err != nil {
+			b.Fatal("error marshalling")
+		}
 	}
 }

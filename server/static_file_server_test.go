@@ -17,8 +17,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 type dummyFileSystem struct{}
@@ -69,12 +67,16 @@ func TestServeHttp(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("GET", "http://localhost/"+c.path, nil)
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			s := StaticFileServer(dummyFileSystem{})
 			s.ServeHTTP(rr, req)
 
-			require.Equalf(t, rr.Header().Get("Content-Type"), c.contentType, "Unexpected Content-Type: %s", rr.Header().Get("Content-Type"))
+			if rr.Header().Get("Content-Type") != c.contentType {
+				t.Fatalf("Unexpected Content-Type: %s", rr.Header().Get("Content-Type"))
+			}
 		})
 	}
 }

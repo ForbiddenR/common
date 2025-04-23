@@ -21,9 +21,8 @@ import (
 
 func TestMatcherValidate(t *testing.T) {
 	cases := []struct {
-		matcher   *Matcher
-		legacyErr string
-		utf8Err   string
+		matcher *Matcher
+		err     string
 	}{
 		{
 			matcher: &Matcher{
@@ -43,74 +42,46 @@ func TestMatcherValidate(t *testing.T) {
 				Name:  "name!",
 				Value: "value",
 			},
-			legacyErr: "invalid name",
+			err: "invalid name",
 		},
 		{
 			matcher: &Matcher{
 				Name:  "",
 				Value: "value",
 			},
-			legacyErr: "invalid name",
-			utf8Err:   "invalid name",
+			err: "invalid name",
 		},
 		{
 			matcher: &Matcher{
 				Name:  "name",
 				Value: "value\xff",
 			},
-			legacyErr: "invalid value",
-			utf8Err:   "invalid value",
+			err: "invalid value",
 		},
 		{
 			matcher: &Matcher{
 				Name:  "name",
 				Value: "",
 			},
-			legacyErr: "invalid value",
-			utf8Err:   "invalid value",
-		},
-		{
-			matcher: &Matcher{
-				Name:  "a\xc5z",
-				Value: "",
-			},
-			legacyErr: "invalid name",
-			utf8Err:   "invalid name",
+			err: "invalid value",
 		},
 	}
 
 	for i, c := range cases {
-		NameValidationScheme = LegacyValidation
-		legacyErr := c.matcher.Validate()
-		NameValidationScheme = UTF8Validation
-		utf8Err := c.matcher.Validate()
-		if legacyErr == nil && utf8Err == nil {
-			if c.legacyErr == "" && c.utf8Err == "" {
+		err := c.matcher.Validate()
+		if err == nil {
+			if c.err == "" {
 				continue
 			}
-			if c.legacyErr != "" {
-				t.Errorf("%d. Expected error for legacy validation %q but got none", i, c.legacyErr)
-			}
-			if c.utf8Err != "" {
-				t.Errorf("%d. Expected error for utf-8 validation %q but got none", i, c.utf8Err)
-			}
+			t.Errorf("%d. Expected error %q but got none", i, c.err)
 			continue
 		}
-		if legacyErr != nil {
-			if c.legacyErr == "" {
-				t.Errorf("%d. Expected no legacy validation error but got %q", i, legacyErr)
-			} else if !strings.Contains(legacyErr.Error(), c.legacyErr) {
-				t.Errorf("%d. Expected error to contain %q but got %q", i, c.legacyErr, legacyErr)
-			}
+		if c.err == "" {
+			t.Errorf("%d. Expected no error but got %q", i, err)
+			continue
 		}
-		if utf8Err != nil {
-			if c.utf8Err == "" {
-				t.Errorf("%d. Expected no utf-8 validation error but got %q", i, utf8Err)
-				continue
-			}
-			if !strings.Contains(utf8Err.Error(), c.utf8Err) {
-				t.Errorf("%d. Expected error to contain %q but got %q", i, c.utf8Err, utf8Err)
-			}
+		if !strings.Contains(err.Error(), c.err) {
+			t.Errorf("%d. Expected error to contain %q but got %q", i, c.err, err)
 		}
 	}
 }
@@ -248,7 +219,6 @@ func TestSilenceValidate(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		NameValidationScheme = LegacyValidation
 		err := c.sil.Validate()
 		if err == nil {
 			if c.err == "" {

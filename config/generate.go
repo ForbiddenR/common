@@ -71,6 +71,7 @@ func SerialNumber() *big.Int {
 	serialNumber.Add(&serial, big.NewInt(1))
 
 	return &serial
+
 }
 
 func GenerateCertificateAuthority(commonName string, parentCert *x509.Certificate, parentKey *rsa.PrivateKey) (*x509.Certificate, *rsa.PrivateKey, error) {
@@ -169,7 +170,7 @@ func writeCertificateAndKey(path string, cert *x509.Certificate, key *rsa.Privat
 		return err
 	}
 
-	if err := os.WriteFile(fmt.Sprintf("%s.crt", path), b.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(fmt.Sprintf("%s.crt", path), b.Bytes(), 0644); err != nil {
 		return err
 	}
 
@@ -178,7 +179,7 @@ func writeCertificateAndKey(path string, cert *x509.Certificate, key *rsa.Privat
 		return err
 	}
 
-	if err := os.WriteFile(fmt.Sprintf("%s.key", path), b.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(fmt.Sprintf("%s.key", path), b.Bytes(), 0644); err != nil {
 		return err
 	}
 
@@ -238,7 +239,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := os.WriteFile("testdata/tls-ca-chain.pem", b.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile("testdata/tls-ca-chain.pem", b.Bytes(), 0644); err != nil {
 		log.Fatal(err)
 	}
 }

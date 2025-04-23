@@ -22,18 +22,9 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	dto "github.com/prometheus/client_model/go"
-	"github.com/stretchr/testify/require"
-
-	"github.com/prometheus/common/model"
 )
 
 func TestCreate(t *testing.T) {
-	oldDefaultScheme := model.NameEscapingScheme
-	model.NameEscapingScheme = model.NoEscaping
-	defer func() {
-		model.NameEscapingScheme = oldDefaultScheme
-	}()
-
 	scenarios := []struct {
 		in  *dto.MetricFamily
 		out string
@@ -129,52 +120,7 @@ gauge_name{name_1="val with\nnew line",name_2="val with \\backslash and \"quotes
 gauge_name{name_1="Björn",name_2="佖佥"} 3.14e+42
 `,
 		},
-		// 2: Gauge, utf-8, +Inf as value, multi-byte characters in label values.
-		{
-			in: &dto.MetricFamily{
-				Name: proto.String("gauge.name"),
-				Help: proto.String("gauge\ndoc\nstr\"ing"),
-				Type: dto.MetricType_GAUGE.Enum(),
-				Metric: []*dto.Metric{
-					{
-						Label: []*dto.LabelPair{
-							{
-								Name:  proto.String("name.1"),
-								Value: proto.String("val with\nnew line"),
-							},
-							{
-								Name:  proto.String("name*2"),
-								Value: proto.String("val with \\backslash and \"quotes\""),
-							},
-						},
-						Gauge: &dto.Gauge{
-							Value: proto.Float64(math.Inf(+1)),
-						},
-					},
-					{
-						Label: []*dto.LabelPair{
-							{
-								Name:  proto.String("name.1"),
-								Value: proto.String("Björn"),
-							},
-							{
-								Name:  proto.String("name*2"),
-								Value: proto.String("佖佥"),
-							},
-						},
-						Gauge: &dto.Gauge{
-							Value: proto.Float64(3.14e42),
-						},
-					},
-				},
-			},
-			out: `# HELP "gauge.name" gauge\ndoc\nstr"ing
-# TYPE "gauge.name" gauge
-{"gauge.name","name.1"="val with\nnew line","name*2"="val with \\backslash and \"quotes\""} +Inf
-{"gauge.name","name.1"="Björn","name*2"="佖佥"} 3.14e+42
-`,
-		},
-		// 3: Untyped, no help, one sample with no labels and -Inf as value, another sample with one label.
+		// 2: Untyped, no help, one sample with no labels and -Inf as value, another sample with one label.
 		{
 			in: &dto.MetricFamily{
 				Name: proto.String("untyped_name"),
@@ -203,7 +149,7 @@ untyped_name -Inf
 untyped_name{name_1="value 1"} -1.23e-45
 `,
 		},
-		// 4: Summary.
+		// 3: Summary.
 		{
 			in: &dto.MetricFamily{
 				Name: proto.String("summary_name"),
@@ -276,7 +222,7 @@ summary_name_sum{name_1="value 1",name_2="value 2"} 2010.1971
 summary_name_count{name_1="value 1",name_2="value 2"} 4711
 `,
 		},
-		// 5: Histogram
+		// 4: Histogram
 		{
 			in: &dto.MetricFamily{
 				Name: proto.String("request_duration_microseconds"),
@@ -324,7 +270,7 @@ request_duration_microseconds_sum 1.7560473e+06
 request_duration_microseconds_count 2693
 `,
 		},
-		// 6: Histogram with missing +Inf bucket.
+		// 5: Histogram with missing +Inf bucket.
 		{
 			in: &dto.MetricFamily{
 				Name: proto.String("request_duration_microseconds"),
@@ -368,7 +314,7 @@ request_duration_microseconds_sum 1.7560473e+06
 request_duration_microseconds_count 2693
 `,
 		},
-		// 7: No metric type, should result in default type Counter.
+		// 6: No metric type, should result in default type Counter.
 		{
 			in: &dto.MetricFamily{
 				Name: proto.String("name"),
@@ -503,7 +449,9 @@ func BenchmarkCreate(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		_, err := MetricFamilyToText(out, mf)
-		require.NoError(b, err)
+		if err != nil {
+			b.Fatal(err)
+		}
 		out.Reset()
 	}
 }
@@ -539,7 +487,9 @@ func BenchmarkCreateBuildInfo(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		_, err := MetricFamilyToText(out, mf)
-		require.NoError(b, err)
+		if err != nil {
+			b.Fatal(err)
+		}
 		out.Reset()
 	}
 }

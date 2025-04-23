@@ -25,7 +25,6 @@ import (
 	"google.golang.org/protobuf/encoding/protodelim"
 
 	dto "github.com/prometheus/client_model/go"
-	"github.com/stretchr/testify/require"
 )
 
 var parser TextParser
@@ -51,12 +50,15 @@ var parser TextParser
 func BenchmarkParseText(b *testing.B) {
 	b.StopTimer()
 	data, err := os.ReadFile("testdata/text")
-	require.NoError(b, err)
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
-		_, err := parser.TextToMetricFamilies(bytes.NewReader(data))
-		require.NoError(b, err)
+		if _, err := parser.TextToMetricFamilies(bytes.NewReader(data)); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -65,14 +67,19 @@ func BenchmarkParseText(b *testing.B) {
 func BenchmarkParseTextGzip(b *testing.B) {
 	b.StopTimer()
 	data, err := os.ReadFile("testdata/text.gz")
-	require.NoError(b, err)
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
 		in, err := gzip.NewReader(bytes.NewReader(data))
-		require.NoError(b, err)
-		_, err = parser.TextToMetricFamilies(in)
-		require.NoError(b, err)
+		if err != nil {
+			b.Fatal(err)
+		}
+		if _, err := parser.TextToMetricFamilies(in); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -85,7 +92,9 @@ func BenchmarkParseTextGzip(b *testing.B) {
 func BenchmarkParseProto(b *testing.B) {
 	b.StopTimer()
 	data, err := os.ReadFile("testdata/protobuf")
-	require.NoError(b, err)
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -111,13 +120,17 @@ func BenchmarkParseProto(b *testing.B) {
 func BenchmarkParseProtoGzip(b *testing.B) {
 	b.StopTimer()
 	data, err := os.ReadFile("testdata/protobuf.gz")
-	require.NoError(b, err)
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
 		family := &dto.MetricFamily{}
 		gz, err := gzip.NewReader(bytes.NewReader(data))
-		require.NoError(b, err)
+		if err != nil {
+			b.Fatal(err)
+		}
 		in := bufio.NewReader(gz)
 		unmarshaler := protodelim.UnmarshalOptions{
 			MaxSize: -1,
@@ -141,7 +154,9 @@ func BenchmarkParseProtoGzip(b *testing.B) {
 func BenchmarkParseProtoMap(b *testing.B) {
 	b.StopTimer()
 	data, err := os.ReadFile("testdata/protobuf")
-	require.NoError(b, err)
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {

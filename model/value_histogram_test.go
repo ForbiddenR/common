@@ -18,8 +18,6 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -752,6 +750,8 @@ func TestMatrixHistogramJSON(t *testing.T) {
 func BenchmarkJSONMarshallingSampleHistogramPairMatrix(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, err := json.Marshal(sampleHistogramPairMatrixValue)
-		require.NoErrorf(b, err, "error marshalling")
+		if err != nil {
+			b.Fatal("error marshalling")
+		}
 	}
 }
