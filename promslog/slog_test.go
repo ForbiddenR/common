@@ -82,8 +82,8 @@ func TestUnmarshallBadLevel(t *testing.T) {
 
 func getLogEntryLevelCounts(s string, re *regexp.Regexp) map[string]int {
 	counters := make(map[string]int)
-	lines := strings.Split(s, "\n")
-	for _, line := range lines {
+	lines := strings.SplitSeq(s, "\n")
+	for line := range lines {
 		matches := re.FindStringSubmatch(line)
 		if len(matches) > 1 {
 			levelIndex := re.SubexpIndex("LevelValue")

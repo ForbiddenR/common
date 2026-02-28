@@ -25,7 +25,6 @@ import (
 	"unicode/utf8"
 
 	dto "github.com/prometheus/client_model/go"
-	"google.golang.org/protobuf/proto"
 
 	"github.com/prometheus/common/model"
 )
@@ -158,12 +157,12 @@ func normalizeHistogram(histogram *dto.Histogram) {
 		return
 	}
 	if histogram.GetSampleCountFloat() == 0 {
-		histogram.SampleCountFloat = proto.Float64(float64(histogram.GetSampleCount()))
+		histogram.SampleCountFloat = new(float64(histogram.GetSampleCount()))
 		histogram.SampleCount = nil
 	}
 	for _, b := range histogram.GetBucket() {
 		if b.GetCumulativeCountFloat() == 0 {
-			b.CumulativeCountFloat = proto.Float64(float64(b.GetCumulativeCount()))
+			b.CumulativeCountFloat = new(float64(b.GetCumulativeCount()))
 			b.CumulativeCount = nil
 		}
 	}
@@ -399,7 +398,7 @@ func (p *TextParser) startLabelName() stateFn {
 		p.currentLabelPairs = nil
 		return nil
 	}
-	p.currentLabelPair = &dto.LabelPair{Name: proto.String(p.currentToken.String())}
+	p.currentLabelPair = &dto.LabelPair{Name: new(p.currentToken.String())}
 	if p.currentLabelPair.GetName() == string(model.MetricNameLabel) {
 		p.parseError(fmt.Sprintf("label name %q is reserved", model.MetricNameLabel))
 		p.currentLabelPairs = nil
@@ -449,7 +448,7 @@ func (p *TextParser) startLabelValue() stateFn {
 		p.parseError(fmt.Sprintf("invalid label value %q", p.currentToken.String()))
 		return nil
 	}
-	p.currentLabelPair.Value = proto.String(p.currentToken.String())
+	p.currentLabelPair.Value = new(p.currentToken.String())
 	// Special treatment of summaries:
 	// - Quantile labels are special, will result in dto.Quantile later.
 	// - Other labels have to be added to currentLabels for signature calculation.
@@ -539,11 +538,11 @@ func (p *TextParser) readingValue() stateFn {
 	}
 	switch p.currentMF.GetType() {
 	case dto.MetricType_COUNTER:
-		p.currentMetric.Counter = &dto.Counter{Value: proto.Float64(value)}
+		p.currentMetric.Counter = &dto.Counter{Value: new(value)}
 	case dto.MetricType_GAUGE:
-		p.currentMetric.Gauge = &dto.Gauge{Value: proto.Float64(value)}
+		p.currentMetric.Gauge = &dto.Gauge{Value: new(value)}
 	case dto.MetricType_UNTYPED:
-		p.currentMetric.Untyped = &dto.Untyped{Value: proto.Float64(value)}
+		p.currentMetric.Untyped = &dto.Untyped{Value: new(value)}
 	case dto.MetricType_SUMMARY:
 		// *sigh*
 		if p.currentMetric.Summary == nil {
@@ -551,15 +550,15 @@ func (p *TextParser) readingValue() stateFn {
 		}
 		switch {
 		case p.currentIsSummaryCount:
-			p.currentMetric.Summary.SampleCount = proto.Uint64(uint64(value))
+			p.currentMetric.Summary.SampleCount = new(uint64(value))
 		case p.currentIsSummarySum:
-			p.currentMetric.Summary.SampleSum = proto.Float64(value)
+			p.currentMetric.Summary.SampleSum = new(value)
 		case !math.IsNaN(p.currentQuantile):
 			p.currentMetric.Summary.Quantile = append(
 				p.currentMetric.Summary.Quantile,
 				&dto.Quantile{
-					Quantile: proto.Float64(p.currentQuantile),
-					Value:    proto.Float64(value),
+					Quantile: new(p.currentQuantile),
+					Value:    new(value),
 				},
 			)
 		}
@@ -571,28 +570,28 @@ func (p *TextParser) readingValue() stateFn {
 		switch {
 		case p.currentIsHistogramCount:
 			if uintValue := uint64(value); value == float64(uintValue) {
-				p.currentMetric.Histogram.SampleCount = proto.Uint64(uintValue)
+				p.currentMetric.Histogram.SampleCount = new(uintValue)
 			} else {
 				if value < 0 {
 					p.parseError(fmt.Sprintf("negative count for histogram %q", p.currentMF.GetName()))
 					return nil
 				}
-				p.currentMetric.Histogram.SampleCountFloat = proto.Float64(value)
+				p.currentMetric.Histogram.SampleCountFloat = new(value)
 			}
 		case p.currentIsHistogramSum:
-			p.currentMetric.Histogram.SampleSum = proto.Float64(value)
+			p.currentMetric.Histogram.SampleSum = new(value)
 		case !math.IsNaN(p.currentBucket):
 			b := &dto.Bucket{
-				UpperBound: proto.Float64(p.currentBucket),
+				UpperBound: new(p.currentBucket),
 			}
 			if uintValue := uint64(value); value == float64(uintValue) {
-				b.CumulativeCount = proto.Uint64(uintValue)
+				b.CumulativeCount = new(uintValue)
 			} else {
 				if value < 0 {
 					p.parseError(fmt.Sprintf("negative bucket population for histogram %q", p.currentMF.GetName()))
 					return nil
 				}
-				b.CumulativeCountFloat = proto.Float64(value)
+				b.CumulativeCountFloat = new(value)
 			}
 			p.currentMetric.Histogram.Bucket = append(p.currentMetric.Histogram.Bucket, b)
 		}
@@ -620,7 +619,7 @@ func (p *TextParser) startTimestamp() stateFn {
 		p.parseError(fmt.Sprintf("expected integer as timestamp, got %q", p.currentToken.String()))
 		return nil
 	}
-	p.currentMetric.TimestampMs = proto.Int64(timestamp)
+	p.currentMetric.TimestampMs = new(timestamp)
 	if p.readTokenUntilNewline(false); p.err != nil {
 		return nil // Unexpected end of input.
 	}
@@ -642,7 +641,7 @@ func (p *TextParser) readingHelp() stateFn {
 	if p.readTokenUntilNewline(true); p.err != nil {
 		return nil // Unexpected end of input.
 	}
-	p.currentMF.Help = proto.String(p.currentToken.String())
+	p.currentMF.Help = new(p.currentToken.String())
 	return p.startOfLine
 }
 
@@ -929,7 +928,7 @@ func (p *TextParser) setOrCreateCurrentMF() {
 			return
 		}
 	}
-	p.currentMF = &dto.MetricFamily{Name: proto.String(name)}
+	p.currentMF = &dto.MetricFamily{Name: new(name)}
 	p.metricFamiliesByName[name] = p.currentMF
 }
 

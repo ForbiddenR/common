@@ -40,38 +40,38 @@ func TestCreate(t *testing.T) {
 		// 0: Counter, NaN as value, timestamp given.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("two-line\n doc  str\\ing"),
+				Name: new("name"),
+				Help: new("two-line\n doc  str\\ing"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("labelname"),
-								Value: proto.String("val1"),
+								Name:  new("labelname"),
+								Value: new("val1"),
 							},
 							{
-								Name:  proto.String("basename"),
-								Value: proto.String("basevalue"),
+								Name:  new("basename"),
+								Value: new("basevalue"),
 							},
 						},
 						Counter: &dto.Counter{
-							Value: proto.Float64(math.NaN()),
+							Value: new(math.NaN()),
 						},
 					},
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("labelname"),
-								Value: proto.String("val2"),
+								Name:  new("labelname"),
+								Value: new("val2"),
 							},
 							{
-								Name:  proto.String("basename"),
-								Value: proto.String("basevalue"),
+								Name:  new("basename"),
+								Value: new("basevalue"),
 							},
 						},
 						Counter: &dto.Counter{
-							Value: proto.Float64(.23),
+							Value: new(.23),
 						},
 						TimestampMs: proto.Int64(1234567890),
 					},
@@ -86,38 +86,38 @@ name{labelname="val2",basename="basevalue"} 0.23 1234567890
 		// 1: Gauge, some escaping required, +Inf as value, multi-byte characters in label values.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("gauge_name"),
-				Help: proto.String("gauge\ndoc\nstr\"ing"),
+				Name: new("gauge_name"),
+				Help: new("gauge\ndoc\nstr\"ing"),
 				Type: dto.MetricType_GAUGE.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("name_1"),
-								Value: proto.String("val with\nnew line"),
+								Name:  new("name_1"),
+								Value: new("val with\nnew line"),
 							},
 							{
-								Name:  proto.String("name_2"),
-								Value: proto.String("val with \\backslash and \"quotes\""),
+								Name:  new("name_2"),
+								Value: new("val with \\backslash and \"quotes\""),
 							},
 						},
 						Gauge: &dto.Gauge{
-							Value: proto.Float64(math.Inf(+1)),
+							Value: new(math.Inf(+1)),
 						},
 					},
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("name_1"),
-								Value: proto.String("Björn"),
+								Name:  new("name_1"),
+								Value: new("Björn"),
 							},
 							{
-								Name:  proto.String("name_2"),
-								Value: proto.String("佖佥"),
+								Name:  new("name_2"),
+								Value: new("佖佥"),
 							},
 						},
 						Gauge: &dto.Gauge{
-							Value: proto.Float64(3.14e42),
+							Value: new(3.14e42),
 						},
 					},
 				},
@@ -131,38 +131,38 @@ gauge_name{name_1="Björn",name_2="佖佥"} 3.14e+42
 		// 2: Gauge, utf-8, +Inf as value, multi-byte characters in label values.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("gauge.name"),
-				Help: proto.String("gauge\ndoc\nstr\"ing"),
+				Name: new("gauge.name"),
+				Help: new("gauge\ndoc\nstr\"ing"),
 				Type: dto.MetricType_GAUGE.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("name.1"),
-								Value: proto.String("val with\nnew line"),
+								Name:  new("name.1"),
+								Value: new("val with\nnew line"),
 							},
 							{
-								Name:  proto.String("name*2"),
-								Value: proto.String("val with \\backslash and \"quotes\""),
+								Name:  new("name*2"),
+								Value: new("val with \\backslash and \"quotes\""),
 							},
 						},
 						Gauge: &dto.Gauge{
-							Value: proto.Float64(math.Inf(+1)),
+							Value: new(math.Inf(+1)),
 						},
 					},
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("name.1"),
-								Value: proto.String("Björn"),
+								Name:  new("name.1"),
+								Value: new("Björn"),
 							},
 							{
-								Name:  proto.String("name*2"),
-								Value: proto.String("佖佥"),
+								Name:  new("name*2"),
+								Value: new("佖佥"),
 							},
 						},
 						Gauge: &dto.Gauge{
-							Value: proto.Float64(3.14e42),
+							Value: new(3.14e42),
 						},
 					},
 				},
@@ -176,23 +176,23 @@ gauge_name{name_1="Björn",name_2="佖佥"} 3.14e+42
 		// 3: Untyped, no help, one sample with no labels and -Inf as value, another sample with one label.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("untyped_name"),
+				Name: new("untyped_name"),
 				Type: dto.MetricType_UNTYPED.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Untyped: &dto.Untyped{
-							Value: proto.Float64(math.Inf(-1)),
+							Value: new(math.Inf(-1)),
 						},
 					},
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("name_1"),
-								Value: proto.String("value 1"),
+								Name:  new("name_1"),
+								Value: new("value 1"),
 							},
 						},
 						Untyped: &dto.Untyped{
-							Value: proto.Float64(-1.23e-45),
+							Value: new(-1.23e-45),
 						},
 					},
 				},
@@ -205,25 +205,25 @@ untyped_name{name_1="value 1"} -1.23e-45
 		// 4: Summary.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("summary_name"),
-				Help: proto.String("summary docstring"),
+				Name: new("summary_name"),
+				Help: new("summary docstring"),
 				Type: dto.MetricType_SUMMARY.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Summary: &dto.Summary{
 							SampleCount: proto.Uint64(42),
-							SampleSum:   proto.Float64(-3.4567),
+							SampleSum:   new(-3.4567),
 							Quantile: []*dto.Quantile{
 								{
-									Quantile: proto.Float64(0.5),
-									Value:    proto.Float64(-1.23),
+									Quantile: new(0.5),
+									Value:    new(-1.23),
 								},
 								{
-									Quantile: proto.Float64(0.9),
-									Value:    proto.Float64(.2342354),
+									Quantile: new(0.9),
+									Value:    new(.2342354),
 								},
 								{
-									Quantile: proto.Float64(0.99),
+									Quantile: new(0.99),
 									Value:    proto.Float64(0),
 								},
 							},
@@ -232,28 +232,28 @@ untyped_name{name_1="value 1"} -1.23e-45
 					{
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("name_1"),
-								Value: proto.String("value 1"),
+								Name:  new("name_1"),
+								Value: new("value 1"),
 							},
 							{
-								Name:  proto.String("name_2"),
-								Value: proto.String("value 2"),
+								Name:  new("name_2"),
+								Value: new("value 2"),
 							},
 						},
 						Summary: &dto.Summary{
 							SampleCount: proto.Uint64(4711),
-							SampleSum:   proto.Float64(2010.1971),
+							SampleSum:   new(2010.1971),
 							Quantile: []*dto.Quantile{
 								{
-									Quantile: proto.Float64(0.5),
+									Quantile: new(0.5),
 									Value:    proto.Float64(1),
 								},
 								{
-									Quantile: proto.Float64(0.9),
+									Quantile: new(0.9),
 									Value:    proto.Float64(2),
 								},
 								{
-									Quantile: proto.Float64(0.99),
+									Quantile: new(0.99),
 									Value:    proto.Float64(3),
 								},
 							},
@@ -278,14 +278,14 @@ summary_name_count{name_1="value 1",name_2="value 2"} 4711
 		// 5: Histogram
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("request_duration_microseconds"),
-				Help: proto.String("The response latency."),
+				Name: new("request_duration_microseconds"),
+				Help: new("The response latency."),
 				Type: dto.MetricType_HISTOGRAM.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Histogram: &dto.Histogram{
 							SampleCount: proto.Uint64(2693),
-							SampleSum:   proto.Float64(1756047.3),
+							SampleSum:   new(1756047.3),
 							Bucket: []*dto.Bucket{
 								{
 									UpperBound:      proto.Float64(100),
@@ -300,11 +300,11 @@ summary_name_count{name_1="value 1",name_2="value 2"} 4711
 									CumulativeCount: proto.Uint64(592),
 								},
 								{
-									UpperBound:      proto.Float64(172.8),
+									UpperBound:      new(172.8),
 									CumulativeCount: proto.Uint64(1524),
 								},
 								{
-									UpperBound:      proto.Float64(math.Inf(+1)),
+									UpperBound:      new(math.Inf(+1)),
 									CumulativeCount: proto.Uint64(2693),
 								},
 							},
@@ -326,14 +326,14 @@ request_duration_microseconds_count 2693
 		// 6: Histogram with missing +Inf bucket.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("request_duration_microseconds"),
-				Help: proto.String("The response latency."),
+				Name: new("request_duration_microseconds"),
+				Help: new("The response latency."),
 				Type: dto.MetricType_HISTOGRAM.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Histogram: &dto.Histogram{
 							SampleCount: proto.Uint64(2693),
-							SampleSum:   proto.Float64(1756047.3),
+							SampleSum:   new(1756047.3),
 							Bucket: []*dto.Bucket{
 								{
 									UpperBound:      proto.Float64(100),
@@ -348,7 +348,7 @@ request_duration_microseconds_count 2693
 									CumulativeCount: proto.Uint64(592),
 								},
 								{
-									UpperBound:      proto.Float64(172.8),
+									UpperBound:      new(172.8),
 									CumulativeCount: proto.Uint64(1524),
 								},
 							},
@@ -370,12 +370,12 @@ request_duration_microseconds_count 2693
 		// 7: No metric type, should result in default type Counter.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("doc string"),
+				Name: new("name"),
+				Help: new("doc string"),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(math.Inf(-1)),
+							Value: new(math.Inf(-1)),
 						},
 					},
 				},
@@ -388,18 +388,18 @@ name -Inf
 		// 8: Float histogram with +Inf.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("doc string"),
+				Name: new("name"),
+				Help: new("doc string"),
 				Type: dto.MetricType_HISTOGRAM.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Histogram: &dto.Histogram{
-							SampleCountFloat: proto.Float64(2693.123),
-							SampleSum:        proto.Float64(1756047.3),
+							SampleCountFloat: new(2693.123),
+							SampleSum:        new(1756047.3),
 							Bucket: []*dto.Bucket{
 								{
 									UpperBound:           proto.Float64(100),
-									CumulativeCountFloat: proto.Float64(123.123),
+									CumulativeCountFloat: new(123.123),
 								},
 								{
 									UpperBound:           proto.Float64(120),
@@ -410,12 +410,12 @@ name -Inf
 									CumulativeCountFloat: proto.Float64(592),
 								},
 								{
-									UpperBound:           proto.Float64(172.8),
+									UpperBound:           new(172.8),
 									CumulativeCountFloat: proto.Float64(1524),
 								},
 								{
-									UpperBound:           proto.Float64(math.Inf(+1)),
-									CumulativeCountFloat: proto.Float64(2693.123),
+									UpperBound:           new(math.Inf(+1)),
+									CumulativeCountFloat: new(2693.123),
 								},
 							},
 						},
@@ -436,18 +436,18 @@ name_count 2693.123
 		// 9: Float histogram without +Inf.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("doc string"),
+				Name: new("name"),
+				Help: new("doc string"),
 				Type: dto.MetricType_HISTOGRAM.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Histogram: &dto.Histogram{
-							SampleCountFloat: proto.Float64(2693.123),
-							SampleSum:        proto.Float64(1756047.3),
+							SampleCountFloat: new(2693.123),
+							SampleSum:        new(1756047.3),
 							Bucket: []*dto.Bucket{
 								{
 									UpperBound:           proto.Float64(100),
-									CumulativeCountFloat: proto.Float64(123.123),
+									CumulativeCountFloat: new(123.123),
 								},
 								{
 									UpperBound:           proto.Float64(120),
@@ -458,7 +458,7 @@ name_count 2693.123
 									CumulativeCountFloat: proto.Float64(592),
 								},
 								{
-									UpperBound:           proto.Float64(172.8),
+									UpperBound:           new(172.8),
 									CumulativeCountFloat: proto.Float64(1524),
 								},
 							},
@@ -480,14 +480,14 @@ name_count 2693.123
 		// 10: Gauge histogram (rendered as regular histogram)
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("doc string"),
+				Name: new("name"),
+				Help: new("doc string"),
 				Type: dto.MetricType_GAUGE_HISTOGRAM.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Histogram: &dto.Histogram{
 							SampleCount: proto.Uint64(2693),
-							SampleSum:   proto.Float64(1756047.3),
+							SampleSum:   new(1756047.3),
 							Bucket: []*dto.Bucket{
 								{
 									UpperBound:      proto.Float64(100),
@@ -502,7 +502,7 @@ name_count 2693.123
 									CumulativeCount: proto.Uint64(592),
 								},
 								{
-									UpperBound:      proto.Float64(172.8),
+									UpperBound:      new(172.8),
 									CumulativeCount: proto.Uint64(1524),
 								},
 							},
@@ -524,18 +524,18 @@ name_count 2693
 		// 11: Gauge float histogram (rendered as regular histogram)
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("doc string"),
+				Name: new("name"),
+				Help: new("doc string"),
 				Type: dto.MetricType_GAUGE_HISTOGRAM.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Histogram: &dto.Histogram{
-							SampleCountFloat: proto.Float64(2693.123),
-							SampleSum:        proto.Float64(1756047.3),
+							SampleCountFloat: new(2693.123),
+							SampleSum:        new(1756047.3),
 							Bucket: []*dto.Bucket{
 								{
 									UpperBound:           proto.Float64(100),
-									CumulativeCountFloat: proto.Float64(123.123),
+									CumulativeCountFloat: new(123.123),
 								},
 								{
 									UpperBound:           proto.Float64(120),
@@ -546,7 +546,7 @@ name_count 2693
 									CumulativeCountFloat: proto.Float64(592),
 								},
 								{
-									UpperBound:           proto.Float64(172.8),
+									UpperBound:           new(172.8),
 									CumulativeCountFloat: proto.Float64(1524),
 								},
 							},
@@ -591,28 +591,28 @@ name_count 2693.123
 
 func BenchmarkCreate(b *testing.B) {
 	mf := &dto.MetricFamily{
-		Name: proto.String("request_duration_microseconds"),
-		Help: proto.String("The response latency."),
+		Name: new("request_duration_microseconds"),
+		Help: new("The response latency."),
 		Type: dto.MetricType_HISTOGRAM.Enum(),
 		Metric: []*dto.Metric{
 			{
 				Label: []*dto.LabelPair{
 					{
-						Name:  proto.String("name_1"),
-						Value: proto.String("val with\nnew line"),
+						Name:  new("name_1"),
+						Value: new("val with\nnew line"),
 					},
 					{
-						Name:  proto.String("name_2"),
-						Value: proto.String("val with \\backslash and \"quotes\""),
+						Name:  new("name_2"),
+						Value: new("val with \\backslash and \"quotes\""),
 					},
 					{
-						Name:  proto.String("name_3"),
-						Value: proto.String("Just a quite long label value to test performance."),
+						Name:  new("name_3"),
+						Value: new("Just a quite long label value to test performance."),
 					},
 				},
 				Histogram: &dto.Histogram{
 					SampleCount: proto.Uint64(2693),
-					SampleSum:   proto.Float64(1756047.3),
+					SampleSum:   new(1756047.3),
 					Bucket: []*dto.Bucket{
 						{
 							UpperBound:      proto.Float64(100),
@@ -627,11 +627,11 @@ func BenchmarkCreate(b *testing.B) {
 							CumulativeCount: proto.Uint64(592),
 						},
 						{
-							UpperBound:      proto.Float64(172.8),
+							UpperBound:      new(172.8),
 							CumulativeCount: proto.Uint64(1524),
 						},
 						{
-							UpperBound:      proto.Float64(math.Inf(+1)),
+							UpperBound:      new(math.Inf(+1)),
 							CumulativeCount: proto.Uint64(2693),
 						},
 					},
@@ -640,21 +640,21 @@ func BenchmarkCreate(b *testing.B) {
 			{
 				Label: []*dto.LabelPair{
 					{
-						Name:  proto.String("name_1"),
-						Value: proto.String("Björn"),
+						Name:  new("name_1"),
+						Value: new("Björn"),
 					},
 					{
-						Name:  proto.String("name_2"),
-						Value: proto.String("佖佥"),
+						Name:  new("name_2"),
+						Value: new("佖佥"),
 					},
 					{
-						Name:  proto.String("name_3"),
-						Value: proto.String("Just a quite long label value to test performance."),
+						Name:  new("name_3"),
+						Value: new("Just a quite long label value to test performance."),
 					},
 				},
 				Histogram: &dto.Histogram{
 					SampleCount: proto.Uint64(5699),
-					SampleSum:   proto.Float64(49484343543.4343),
+					SampleSum:   new(49484343543.4343),
 					Bucket: []*dto.Bucket{
 						{
 							UpperBound:      proto.Float64(100),
@@ -669,7 +669,7 @@ func BenchmarkCreate(b *testing.B) {
 							CumulativeCount: proto.Uint64(596),
 						},
 						{
-							UpperBound:      proto.Float64(172.8),
+							UpperBound:      new(172.8),
 							CumulativeCount: proto.Uint64(1535),
 						},
 					},
@@ -689,23 +689,23 @@ func BenchmarkCreate(b *testing.B) {
 
 func BenchmarkCreateBuildInfo(b *testing.B) {
 	mf := &dto.MetricFamily{
-		Name: proto.String("benchmark_build_info"),
-		Help: proto.String("Test the creation of constant 1-value build_info metric."),
+		Name: new("benchmark_build_info"),
+		Help: new("Test the creation of constant 1-value build_info metric."),
 		Type: dto.MetricType_GAUGE.Enum(),
 		Metric: []*dto.Metric{
 			{
 				Label: []*dto.LabelPair{
 					{
-						Name:  proto.String("version"),
-						Value: proto.String("1.2.3"),
+						Name:  new("version"),
+						Value: new("1.2.3"),
 					},
 					{
-						Name:  proto.String("revision"),
-						Value: proto.String("2e84f5e4eacdffb574035810305191ff390360fe"),
+						Name:  new("revision"),
+						Value: new("2e84f5e4eacdffb574035810305191ff390360fe"),
 					},
 					{
-						Name:  proto.String("go_version"),
-						Value: proto.String("1.11.1"),
+						Name:  new("go_version"),
+						Value: new("1.11.1"),
 					},
 				},
 				Gauge: &dto.Gauge{
@@ -731,8 +731,8 @@ func TestCreateError(t *testing.T) {
 		// 0: No metric.
 		{
 			in: &dto.MetricFamily{
-				Name:   proto.String("name"),
-				Help:   proto.String("doc string"),
+				Name:   new("name"),
+				Help:   new("doc string"),
 				Type:   dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{},
 			},
@@ -741,12 +741,12 @@ func TestCreateError(t *testing.T) {
 		// 1: No metric name.
 		{
 			in: &dto.MetricFamily{
-				Help: proto.String("doc string"),
+				Help: new("doc string"),
 				Type: dto.MetricType_UNTYPED.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Untyped: &dto.Untyped{
-							Value: proto.Float64(math.Inf(-1)),
+							Value: new(math.Inf(-1)),
 						},
 					},
 				},
@@ -756,13 +756,13 @@ func TestCreateError(t *testing.T) {
 		// 2: Wrong type.
 		{
 			in: &dto.MetricFamily{
-				Name: proto.String("name"),
-				Help: proto.String("doc string"),
+				Name: new("name"),
+				Help: new("doc string"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Untyped: &dto.Untyped{
-							Value: proto.Float64(math.Inf(-1)),
+							Value: new(math.Inf(-1)),
 						},
 					},
 				},

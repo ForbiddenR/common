@@ -488,8 +488,8 @@ func BenchmarkDiscriminatorHTTPHeader(b *testing.B) {
 func TestExtractSamples(t *testing.T) {
 	var (
 		goodMetricFamily1 = &dto.MetricFamily{
-			Name: proto.String("foo"),
-			Help: proto.String("Help for foo."),
+			Name: new("foo"),
+			Help: new("Help for foo."),
 			Type: dto.MetricType_COUNTER.Enum(),
 			Metric: []*dto.Metric{
 				{
@@ -500,25 +500,25 @@ func TestExtractSamples(t *testing.T) {
 			},
 		}
 		goodMetricFamily2 = &dto.MetricFamily{
-			Name: proto.String("bar"),
-			Help: proto.String("Help for bar."),
+			Name: new("bar"),
+			Help: new("Help for bar."),
 			Type: dto.MetricType_GAUGE.Enum(),
 			Metric: []*dto.Metric{
 				{
 					Gauge: &dto.Gauge{
-						Value: proto.Float64(3.14),
+						Value: new(3.14),
 					},
 				},
 			},
 		}
 		badMetricFamily = &dto.MetricFamily{
-			Name: proto.String("bad"),
-			Help: proto.String("Help for bad."),
+			Name: new("bad"),
+			Help: new("Help for bad."),
 			Type: dto.MetricType(42).Enum(),
 			Metric: []*dto.Metric{
 				{
 					Gauge: &dto.Gauge{
-						Value: proto.Float64(2.7),
+						Value: new(2.7),
 					},
 				},
 			},

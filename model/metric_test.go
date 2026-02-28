@@ -646,44 +646,44 @@ func TestEscapeMetricFamily(t *testing.T) {
 			name:   "simple, no escaping needed",
 			scheme: ValueEncodingEscaping,
 			input: &dto.MetricFamily{
-				Name: proto.String("my_metric"),
-				Help: proto.String("some help text"),
+				Name: new("my_metric"),
+				Help: new("some help text"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("my_metric"),
+								Name:  new("__name__"),
+								Value: new("my_metric"),
 							},
 							{
-								Name:  proto.String("some_label"),
-								Value: proto.String("labelvalue"),
+								Name:  new("some_label"),
+								Value: new("labelvalue"),
 							},
 						},
 					},
 				},
 			},
 			expected: &dto.MetricFamily{
-				Name: proto.String("my_metric"),
-				Help: proto.String("some help text"),
+				Name: new("my_metric"),
+				Help: new("some help text"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("my_metric"),
+								Name:  new("__name__"),
+								Value: new("my_metric"),
 							},
 							{
-								Name:  proto.String("some_label"),
-								Value: proto.String("labelvalue"),
+								Name:  new("some_label"),
+								Value: new("labelvalue"),
 							},
 						},
 					},
@@ -694,44 +694,44 @@ func TestEscapeMetricFamily(t *testing.T) {
 			name:   "label name escaping needed",
 			scheme: ValueEncodingEscaping,
 			input: &dto.MetricFamily{
-				Name: proto.String("my_metric"),
-				Help: proto.String("some help text"),
+				Name: new("my_metric"),
+				Help: new("some help text"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("my_metric"),
+								Name:  new("__name__"),
+								Value: new("my_metric"),
 							},
 							{
-								Name:  proto.String("some.label"),
-								Value: proto.String("labelvalue"),
+								Name:  new("some.label"),
+								Value: new("labelvalue"),
 							},
 						},
 					},
 				},
 			},
 			expected: &dto.MetricFamily{
-				Name: proto.String("my_metric"),
-				Help: proto.String("some help text"),
+				Name: new("my_metric"),
+				Help: new("some help text"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("my_metric"),
+								Name:  new("__name__"),
+								Value: new("my_metric"),
 							},
 							{
-								Name:  proto.String("U__some_2e_label"),
-								Value: proto.String("labelvalue"),
+								Name:  new("U__some_2e_label"),
+								Value: new("labelvalue"),
 							},
 						},
 					},
@@ -742,44 +742,44 @@ func TestEscapeMetricFamily(t *testing.T) {
 			name:   "counter, escaping needed",
 			scheme: ValueEncodingEscaping,
 			input: &dto.MetricFamily{
-				Name: proto.String("my.metric"),
-				Help: proto.String("some help text"),
+				Name: new("my.metric"),
+				Help: new("some help text"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("my.metric"),
+								Name:  new("__name__"),
+								Value: new("my.metric"),
 							},
 							{
-								Name:  proto.String("some?label"),
-								Value: proto.String("label??value"),
+								Name:  new("some?label"),
+								Value: new("label??value"),
 							},
 						},
 					},
 				},
 			},
 			expected: &dto.MetricFamily{
-				Name: proto.String("U__my_2e_metric"),
-				Help: proto.String("some help text"),
+				Name: new("U__my_2e_metric"),
+				Help: new("some help text"),
 				Type: dto.MetricType_COUNTER.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Counter: &dto.Counter{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("U__my_2e_metric"),
+								Name:  new("__name__"),
+								Value: new("U__my_2e_metric"),
 							},
 							{
-								Name:  proto.String("U__some_3f_label"),
-								Value: proto.String("label??value"),
+								Name:  new("U__some_3f_label"),
+								Value: new("label??value"),
 							},
 						},
 					},
@@ -790,44 +790,44 @@ func TestEscapeMetricFamily(t *testing.T) {
 			name:   "gauge, escaping needed",
 			scheme: DotsEscaping,
 			input: &dto.MetricFamily{
-				Name: proto.String("unicode.and.dots.花火"),
-				Help: proto.String("some help text"),
+				Name: new("unicode.and.dots.花火"),
+				Help: new("some help text"),
 				Type: dto.MetricType_GAUGE.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Gauge: &dto.Gauge{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("unicode.and.dots.花火"),
+								Name:  new("__name__"),
+								Value: new("unicode.and.dots.花火"),
 							},
 							{
-								Name:  proto.String("some_label"),
-								Value: proto.String("label??value"),
+								Name:  new("some_label"),
+								Value: new("label??value"),
 							},
 						},
 					},
 				},
 			},
 			expected: &dto.MetricFamily{
-				Name: proto.String("unicode_dot_and_dot_dots_dot_____"),
-				Help: proto.String("some help text"),
+				Name: new("unicode_dot_and_dot_dots_dot_____"),
+				Help: new("some help text"),
 				Type: dto.MetricType_GAUGE.Enum(),
 				Metric: []*dto.Metric{
 					{
 						Gauge: &dto.Gauge{
-							Value: proto.Float64(34.2),
+							Value: new(34.2),
 						},
 						Label: []*dto.LabelPair{
 							{
-								Name:  proto.String("__name__"),
-								Value: proto.String("unicode_dot_and_dot_dots_dot_____"),
+								Name:  new("__name__"),
+								Value: new("unicode_dot_and_dot_dots_dot_____"),
 							},
 							{
-								Name:  proto.String("some_label"),
-								Value: proto.String("label??value"),
+								Name:  new("some_label"),
+								Value: new("label??value"),
 							},
 						},
 					},
@@ -836,7 +836,7 @@ func TestEscapeMetricFamily(t *testing.T) {
 		},
 	}
 
-	unexportList := []interface{}{dto.MetricFamily{}, dto.Metric{}, dto.LabelPair{}, dto.Counter{}, dto.Gauge{}}
+	unexportList := []any{dto.MetricFamily{}, dto.Metric{}, dto.LabelPair{}, dto.Counter{}, dto.Gauge{}}
 
 	for _, scenario := range scenarios {
 		t.Run(scenario.name, func(t *testing.T) {

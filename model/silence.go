@@ -70,7 +70,7 @@ type Silence struct {
 	StartsAt time.Time `json:"startsAt"`
 	EndsAt   time.Time `json:"endsAt"`
 
-	CreatedAt time.Time `json:"createdAt,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
 	CreatedBy string    `json:"createdBy"`
 	Comment   string    `json:"comment,omitempty"`
 }

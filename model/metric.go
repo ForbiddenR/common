@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"regexp"
 	"sort"
 	"strconv"
@@ -25,7 +26,6 @@ import (
 
 	dto "github.com/prometheus/client_model/go"
 	"go.yaml.in/yaml/v2"
-	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -267,9 +267,7 @@ func (m Metric) Before(o Metric) bool {
 // Clone returns a copy of the Metric.
 func (m Metric) Clone() Metric {
 	clone := make(Metric, len(m))
-	for k, v := range m {
-		clone[k] = v
-	}
+	maps.Copy(clone, m)
 	return clone
 }
 
@@ -353,7 +351,7 @@ func EscapeMetricFamily(v *dto.MetricFamily, scheme EscapingScheme) *dto.MetricF
 	if v.Name == nil || IsValidLegacyMetricName(v.GetName()) {
 		out.Name = v.Name
 	} else {
-		out.Name = proto.String(EscapeName(v.GetName(), scheme))
+		out.Name = new(EscapeName(v.GetName(), scheme))
 	}
 	for _, m := range v.Metric {
 		if !metricNeedsEscaping(m) {
@@ -377,8 +375,8 @@ func EscapeMetricFamily(v *dto.MetricFamily, scheme EscapingScheme) *dto.MetricF
 					continue
 				}
 				escaped.Label = append(escaped.Label, &dto.LabelPair{
-					Name:  proto.String(MetricNameLabel),
-					Value: proto.String(EscapeName(l.GetValue(), scheme)),
+					Name:  new(MetricNameLabel),
+					Value: new(EscapeName(l.GetValue(), scheme)),
 				})
 				continue
 			}
@@ -387,7 +385,7 @@ func EscapeMetricFamily(v *dto.MetricFamily, scheme EscapingScheme) *dto.MetricF
 				continue
 			}
 			escaped.Label = append(escaped.Label, &dto.LabelPair{
-				Name:  proto.String(EscapeName(l.GetName(), scheme)),
+				Name:  new(EscapeName(l.GetName(), scheme)),
 				Value: l.Value,
 			})
 		}

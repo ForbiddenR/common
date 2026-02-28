@@ -202,13 +202,13 @@ func TestNegotiateIncludingOpenMetrics(t *testing.T) {
 
 func TestEncode(t *testing.T) {
 	metric1 := &dto.MetricFamily{
-		Name: proto.String("foo_metric"),
+		Name: new("foo_metric"),
 		Type: dto.MetricType_UNTYPED.Enum(),
-		Unit: proto.String("seconds"),
+		Unit: new("seconds"),
 		Metric: []*dto.Metric{
 			{
 				Untyped: &dto.Untyped{
-					Value: proto.Float64(1.234),
+					Value: new(1.234),
 				},
 			},
 		},
@@ -337,19 +337,19 @@ func TestEscapedEncode(t *testing.T) {
 	}
 
 	metric := &dto.MetricFamily{
-		Name: proto.String("foo.metric"),
+		Name: new("foo.metric"),
 		Type: dto.MetricType_UNTYPED.Enum(),
 		Metric: []*dto.Metric{
 			{
 				Untyped: &dto.Untyped{
-					Value: proto.Float64(1.234),
+					Value: new(1.234),
 				},
 			},
 			{
 				Label: []*dto.LabelPair{
 					{
-						Name:  proto.String("dotted.label.name"),
-						Value: proto.String("my.label.value"),
+						Name:  new("dotted.label.name"),
+						Value: new("my.label.value"),
 					},
 				},
 				Untyped: &dto.Untyped{
@@ -380,19 +380,19 @@ func TestDottedEncode(t *testing.T) {
 	//nolint:staticcheck
 	model.NameValidationScheme = model.UTF8Validation
 	metric := &dto.MetricFamily{
-		Name: proto.String("foo.metric"),
+		Name: new("foo.metric"),
 		Type: dto.MetricType_COUNTER.Enum(),
 		Metric: []*dto.Metric{
 			{
 				Counter: &dto.Counter{
-					Value: proto.Float64(1.234),
+					Value: new(1.234),
 				},
 			},
 			{
 				Label: []*dto.LabelPair{
 					{
-						Name:  proto.String("dotted.label.name"),
-						Value: proto.String("my.label.value"),
+						Name:  new("dotted.label.name"),
+						Value: new("my.label.value"),
 					},
 				},
 				Counter: &dto.Counter{
